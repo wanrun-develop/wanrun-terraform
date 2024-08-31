@@ -23,9 +23,9 @@ resource "aws_security_group" "vpc_endpoint" {
 
 resource "aws_vpc_security_group_egress_rule" "vpc_endpoint_egress" {
   ip_protocol = "-1"
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port = "0"
-  to_port = "0"
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = "0"
+  to_port     = "0"
   description = "Allow all"
 
   security_group_id = aws_security_group.vpc_endpoint.id
@@ -37,9 +37,9 @@ resource "aws_vpc_security_group_egress_rule" "vpc_endpoint_egress" {
 
 resource "aws_vpc_security_group_ingress_rule" "vpc_endpoint_ingress" {
   ip_protocol = "-1"
-  cidr_ipv4 = var.vpc_cidr
-  from_port = "0"
-  to_port = "0"
+  cidr_ipv4   = var.vpc_cidr
+  from_port   = "0"
+  to_port     = "0"
   description = "Allow this vpc"
 
   security_group_id = aws_security_group.vpc_endpoint.id
