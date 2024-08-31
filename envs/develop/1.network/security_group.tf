@@ -5,20 +5,6 @@ resource "aws_security_group" "vpc_endpoint" {
   name        = "${var.service_name}-${var.env}-vpc-endpoint"
   vpc_id      = aws_vpc.wanrun.id
   description = "vpc-endpoint"
-
-  ingress {
-    cidr_blocks = [var.vpc_cidr]
-    description = "Allow this VPC"
-    from_port   = "0"
-    protocol    = "-1"
-    to_port     = "0"
-  }
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    from_port   = "0"
-    protocol    = "-1"
-    to_port     = "0"
-  }
 }
 
 resource "aws_vpc_security_group_egress_rule" "vpc_endpoint_egress" {

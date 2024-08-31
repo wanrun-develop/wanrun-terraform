@@ -26,7 +26,7 @@ provider "aws" {
     tags = {
       ManagedBy = "terraform"
       Envs      = "develop"
-      UseCase   = "wanrunn"
+      UseCase   = "wanrun"
     }
   }
 }

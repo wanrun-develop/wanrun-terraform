@@ -1,3 +1,6 @@
+###########################################
+# Public
+###########################################
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.wanrun.id
 
@@ -26,6 +29,9 @@ resource "aws_route_table_association" "public_1d" {
   route_table_id = aws_route_table.public.id
 }
 
+###########################################
+# Private
+###########################################
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.wanrun.id
 

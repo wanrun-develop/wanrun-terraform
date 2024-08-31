@@ -1,3 +1,6 @@
+###########################################
+# Public
+###########################################
 resource "aws_subnet" "public_subnet_1a" {
   vpc_id     = aws_vpc.wanrun.id
   cidr_block = var.subnets_cidr["public_subnet_1a"]
@@ -28,6 +31,9 @@ resource "aws_subnet" "public_subnet_1d" {
   }
 }
 
+###########################################
+# Private
+###########################################
 resource "aws_subnet" "private_subnet_1a" {
   vpc_id     = aws_vpc.wanrun.id
   cidr_block = var.subnets_cidr["private_subnet_1a"]
