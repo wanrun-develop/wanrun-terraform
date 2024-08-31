@@ -10,19 +10,23 @@ REGION="ap-northeast-1"
 ENV="develop"
 BUCKET_NAME="$ORG_NAME-$ENV-terraform-tfstate"
 DYNAMODB_TABLE="$ORG_NAME-terraform-state-lock"
+PROFILE_NAME="{各自のprofile_nameを入れる}"
 
 # Create S3 bucket for terraform state
 aws s3api create-bucket \
     --bucket $BUCKET_NAME \
     --region $REGION \
-    --create-bucket-configuration LocationConstraint=$REGION
+    --create-bucket-configuration LocationConstraint=$REGION \
+    --profile $PROFILE_NAME
 
 aws s3api put-bucket-versioning \
     --bucket $BUCKET_NAME \
-    --versioning-configuration Status=Enabled
+    --versioning-configuration Status=Enabled \
+    --profile $PROFILE_NAME
 
 aws s3api put-bucket-encryption \
     --bucket $BUCKET_NAME \
+    --profile $PROFILE_NAME \
     --server-side-encryption-configuration '{
         "Rules": [
             {
