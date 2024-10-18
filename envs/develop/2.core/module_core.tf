@@ -1,4 +1,4 @@
-module "web_base" {
+module "core" {
   source = "../../../modules/core"
 
   service_name = var.service_name
