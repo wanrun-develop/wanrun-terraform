@@ -7,7 +7,7 @@ resource "aws_kms_key" "main" {
   policy = jsonencode(
     {
       "Version" : "2012-10-17",
-      "Id" : "key-policy-name",
+      "Id" : "global-kms",
       "Statement" : [
         {
           "Sid" : "Enable IAM User Permissions",
