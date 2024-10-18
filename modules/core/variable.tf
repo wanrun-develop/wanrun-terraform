@@ -9,16 +9,16 @@ variable "env" {
 }
 
 variable "web_front_domain" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "front_web_waf_acl_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "cloudfront_acm_arn" {
-  type = string
+  type    = string
   default = ""
 }
