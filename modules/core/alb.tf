@@ -8,7 +8,7 @@ resource "aws_lb" "wanrun_be" {
   enable_deletion_protection = true
   drop_invalid_header_fields = true
 
-  idle_timeout = var.alb_wanrun_idle_time # 1 ~ 4000
+  idle_timeout = var.alb_wanrun_idle_time // 1 ~ 4000
 
   access_logs {
     bucket  = var.alb_wanrun_access_log_bucket_id
