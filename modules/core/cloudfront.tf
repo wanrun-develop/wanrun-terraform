@@ -3,32 +3,32 @@ resource "aws_cloudfront_distribution" "web" {
 
   # オリジンの設定
   origin {
-    domain_name = aws_s3_bucket.web.bucket_regional_domain_name
-    origin_id = aws_s3_bucket.web.id
+    domain_name              = aws_s3_bucket.web.bucket_regional_domain_name
+    origin_id                = aws_s3_bucket.web.id
     origin_access_control_id = aws_cloudfront_origin_access_control.web.id
   }
 
   default_cache_behavior {
-    target_origin_id = aws_s3_bucket.web.id
-    viewer_protocol_policy     = "redirect-to-https"
-    allowed_methods            = ["GET", "HEAD"]
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
+    target_origin_id       = aws_s3_bucket.web.id
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
 
     # 各policy設定
     response_headers_policy_id = aws_cloudfront_response_headers_policy.web.id
-    origin_request_policy_id = aws_cloudfront_origin_request_policy.web.id
-    cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
+    origin_request_policy_id   = aws_cloudfront_origin_request_policy.web.id
+    cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
   }
 
-#   aliases = [
-#     var.web_front_domain
-#   ]
+  #   aliases = [
+  #     var.web_front_domain
+  #   ]
 
   is_ipv6_enabled     = true
   price_class         = "PriceClass_200" #PriceClass_100
   default_root_object = "index.html"
-#   web_acl_id          = var.front_web_waf_acl_id # 現状WAFなしで進める
+  #   web_acl_id          = var.front_web_waf_acl_id # 現状WAFなしで進める
 
   restrictions {
     geo_restriction {
@@ -42,11 +42,11 @@ resource "aws_cloudfront_distribution" "web" {
     ssl_support_method       = "sni-only"
   }
 
-#   logging_config {
-#     include_cookies = false
-#     bucket          = "${var.service_name}-${var.env}-web-cloudfront-log"
-#     prefix          = "cloudfront/web/"
-#   }
+  #   logging_config {
+  #     include_cookies = false
+  #     bucket          = "${var.service_name}-${var.env}-web-cloudfront-log"
+  #     prefix          = "cloudfront/web/"
+  #   }
 
   custom_error_response {
     error_code            = 403
@@ -70,13 +70,13 @@ resource "aws_cloudfront_origin_request_policy" "web" {
   name = "${var.service_name}-${var.env}-web-custom-origin-request-policy"
 
   cookies_config {
-    cookie_behavior = "none"  # Cookieは転送しない
+    cookie_behavior = "none" # Cookieは転送しない
   }
 
   headers_config {
-    header_behavior = "whitelist"  # 指定されたヘッダーのみを転送
+    header_behavior = "whitelist" # 指定されたヘッダーのみを転送
     headers {
-      items = [  
+      items = [
         "CloudFront-Is-Tablet-Viewer",
         "CloudFront-Is-Mobile-Viewer",
         "CloudFront-Is-SmartTV-Viewer",
@@ -88,7 +88,7 @@ resource "aws_cloudfront_origin_request_policy" "web" {
   }
 
   query_strings_config {
-    query_string_behavior = "all"  # 全てのクエリ文字列を転送
+    query_string_behavior = "all" # 全てのクエリ文字列を転送
   }
 }
 
