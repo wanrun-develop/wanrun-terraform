@@ -16,9 +16,6 @@ data "aws_vpc" "wanrun" {
   }
 }
 
-data "aws_subnets" "public" {
-}
-
 // VPC内の全サブネットを取得
 data "aws_subnets" "vpc" {
   filter {
@@ -27,7 +24,7 @@ data "aws_subnets" "vpc" {
   }
 }
 
-// Publicサブネットのみを取得
+// Publicのsubnetsを取得
 data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.wanrun.id
 
@@ -37,7 +34,7 @@ data "aws_subnet_ids" "public" {
   }
 }
 
-// Privateサブネットのみを取得
+// Privateのsubnetsを取得
 data "aws_subnet_ids" "private" {
   vpc_id = data.aws_vpc.wanrun.id
 
