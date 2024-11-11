@@ -1,3 +1,6 @@
+###########################################
+# backend
+###########################################
 resource "aws_lb" "wanrun_be" {
   name               = "${var.service_name}-${var.env}-wanrun"
   internal           = false
@@ -13,7 +16,7 @@ resource "aws_lb" "wanrun_be" {
   access_logs {
     bucket  = var.alb_wanrun_access_log_bucket_id
     prefix  = var.alb_wanrun_access_log_prefix
-    enabled = var.env == "prod" ? true : false
+    enabled = var.env == "prod" ? true : false // 本番だけ
   }
 }
 

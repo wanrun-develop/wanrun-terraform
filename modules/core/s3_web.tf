@@ -1,3 +1,6 @@
+###########################################
+# web
+###########################################
 resource "aws_s3_bucket" "web" {
   bucket = "${var.service_name}-${var.env}"
 }
@@ -27,7 +30,7 @@ data "aws_iam_policy_document" "web" {
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
-      values   = [aws_cloudfront_distribution.web.arn]
+      values   = [aws_cloudfront_distribution.main.arn]
     }
   }
 }
