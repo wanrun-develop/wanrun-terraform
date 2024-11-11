@@ -3,8 +3,8 @@ module "core" {
 
   service_name = var.service_name
   env          = var.env
-  #   web_front_domain = var.web_front_domain
-  # front_web_waf_acl_id = 
+  #   main_domain = var.web_front_domain
+  # main_waf_acl_id = 
   # cloudfront_acm_arn = 
 
   alb_wanrun_sgs       = [data.aws_security_group.alb_sg.id]
@@ -12,7 +12,14 @@ module "core" {
   alb_wanrun_idle_time = 60
   certificate_arn      = ""
 
-  // 本番だけ
+  // 本番のみ設定をする
   alb_wanrun_access_log_bucket_id = ""
   alb_wanrun_access_log_prefix    = ""
+
+  // ecs cluster
+  is_container_insights                          = false
+  fargate_base_capacity_provider_strategy        = 0
+  fargate_weight_capacity_provider_strategy      = 1
+  fargate_spot_base_capacity_provider_strategy   = 1
+  fargate_spot_weight_capacity_provider_strategy = 3
 }
