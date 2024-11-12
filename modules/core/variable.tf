@@ -86,3 +86,38 @@ variable "fargate_spot_weight_capacity_provider_strategy" {
   default     = 0
   description = "Fargate(オンデマンド)とFargate spotでの起動するタスクの割合。baseを超えてから追加される比率"
 }
+
+variable "ecr_namespace" {
+  type    = string
+  default = ""
+}
+
+variable "retention_image_count" {
+  type    = number
+  default = 3
+}
+
+variable "vpc_id" {
+  type    = string
+  default = ""
+}
+
+variable "kms_key_arn" {
+  type    = string
+  default = ""
+}
+
+variable "private_subnet_ids" {
+  type    = list(string)
+  default = []
+}
+
+variable "fargate_sg_ids" {
+  type    = list(string)
+  default = []
+}
+
+variable "cpu_architecture" {
+  type    = string
+  default = "ARM64"
+}
