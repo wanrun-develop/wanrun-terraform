@@ -8,12 +8,12 @@ variable "env" {
   default = ""
 }
 
-variable "web_front_domain" {
+variable "main_domain" {
   type    = string
   default = ""
 }
 
-variable "front_web_waf_acl_id" {
+variable "main_waf_acl_id" {
   type    = string
   default = ""
 }
@@ -56,4 +56,33 @@ variable "ssl_policy" {
 variable "certificate_arn" {
   type    = string
   default = ""
+}
+
+variable "is_container_insights" {
+  type    = bool
+  default = false
+}
+
+variable "fargate_base_capacity_provider_strategy" {
+  type        = number
+  default     = 0
+  description = "本番は1以上にする"
+}
+
+variable "fargate_weight_capacity_provider_strategy" {
+  type        = number
+  default     = 0
+  description = "Fargate(オンデマンド)とFargate spotでの起動するタスクの割合。baseを超えてから追加される比率"
+}
+
+variable "fargate_spot_base_capacity_provider_strategy" {
+  type        = number
+  default     = 0
+  description = "本番は0にする"
+}
+
+variable "fargate_spot_weight_capacity_provider_strategy" {
+  type        = number
+  default     = 0
+  description = "Fargate(オンデマンド)とFargate spotでの起動するタスクの割合。baseを超えてから追加される比率"
 }

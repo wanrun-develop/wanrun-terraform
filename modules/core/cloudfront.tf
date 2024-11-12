@@ -1,11 +1,11 @@
-resource "aws_cloudfront_distribution" "web" {
+resource "aws_cloudfront_distribution" "main" {
   enabled = true
 
   # オリジンの設定
   origin {
     domain_name              = aws_s3_bucket.web.bucket_regional_domain_name
     origin_id                = aws_s3_bucket.web.id
-    origin_access_control_id = aws_cloudfront_origin_access_control.web.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.main.id
   }
 
   default_cache_behavior {
@@ -16,19 +16,19 @@ resource "aws_cloudfront_distribution" "web" {
     compress               = true
 
     # 各policy設定
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.web.id
-    origin_request_policy_id   = aws_cloudfront_origin_request_policy.web.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+    origin_request_policy_id   = aws_cloudfront_origin_request_policy.main.id
     cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
   }
 
   #   aliases = [
-  #     var.web_front_domain
+  #     var.main_domain
   #   ]
 
   is_ipv6_enabled     = true
   price_class         = "PriceClass_200" #PriceClass_100
   default_root_object = "index.html"
-  #   web_acl_id          = var.front_web_waf_acl_id # 現状WAFなしで進める
+  #   web_acl_id          = var.main_waf_acl_id # 現状WAFなしで進める
 
   restrictions {
     geo_restriction {
@@ -44,8 +44,8 @@ resource "aws_cloudfront_distribution" "web" {
 
   #   logging_config {
   #     include_cookies = false
-  #     bucket          = "${var.service_name}-${var.env}-web-cloudfront-log"
-  #     prefix          = "cloudfront/web/"
+  #     bucket          = "${var.service_name}-${var.env}-main-cloudfront-log"
+  #     prefix          = "cloudfront/main/"
   #   }
 
   custom_error_response {
@@ -55,7 +55,7 @@ resource "aws_cloudfront_distribution" "web" {
   }
 }
 
-resource "aws_cloudfront_response_headers_policy" "web" {
+resource "aws_cloudfront_response_headers_policy" "main" {
   name = "${var.service_name}-${var.env}-response-header-policy"
   security_headers_config {
     frame_options {
@@ -66,8 +66,8 @@ resource "aws_cloudfront_response_headers_policy" "web" {
 }
 
 # オリジンリクエストポリシー
-resource "aws_cloudfront_origin_request_policy" "web" {
-  name = "${var.service_name}-${var.env}-web-custom-origin-request-policy"
+resource "aws_cloudfront_origin_request_policy" "main" {
+  name = "${var.service_name}-${var.env}-main-custom-origin-request-policy"
 
   cookies_config {
     cookie_behavior = "none" # Cookieは転送しない
@@ -93,7 +93,7 @@ resource "aws_cloudfront_origin_request_policy" "web" {
 }
 
 # OAC
-resource "aws_cloudfront_origin_access_control" "web" {
+resource "aws_cloudfront_origin_access_control" "main" {
   name                              = "${var.service_name}-${var.env}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
