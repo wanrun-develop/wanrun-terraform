@@ -18,8 +18,8 @@ module "core" {
 
   // ecs cluster
   is_container_insights                          = false
-  fargate_base_capacity_provider_strategy        = 0
-  fargate_weight_capacity_provider_strategy      = 1
-  fargate_spot_base_capacity_provider_strategy   = 1
-  fargate_spot_weight_capacity_provider_strategy = 3
+  fargate_base_capacity_provider_strategy        = var.fargate_base_capacity_provider_strategy
+  fargate_weight_capacity_provider_strategy      = var.fargate_weight_capacity_provider_strategy
+  fargate_spot_base_capacity_provider_strategy   = var.fargate_spot_base_capacity_provider_strategy
+  fargate_spot_weight_capacity_provider_strategy = var.fargate_spot_weight_capacity_provider_strategy
 }
