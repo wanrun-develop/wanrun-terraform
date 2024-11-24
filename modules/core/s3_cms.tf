@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "cms" {
     principals {
       type = "AWS"
       identifiers = [
-        aws_iam_role.ecs-task-role-common.arn
+        aws_iam_role.wanrun_ecs_task_role.arn
       ]
     }
   }
