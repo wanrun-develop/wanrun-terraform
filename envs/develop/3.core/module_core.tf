@@ -22,4 +22,8 @@ module "core" {
   fargate_weight_capacity_provider_strategy      = var.fargate_weight_capacity_provider_strategy
   fargate_spot_base_capacity_provider_strategy   = var.fargate_spot_base_capacity_provider_strategy
   fargate_spot_weight_capacity_provider_strategy = var.fargate_spot_weight_capacity_provider_strategy
+
+  // gateway
+  cloudfront_access_control_header_key   = "X-Origin-Access-Control"
+  cloudfront_access_control_header_value = data.aws_ssm_parameter.cloudfront_access_control_header_value.value
 }

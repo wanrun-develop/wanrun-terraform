@@ -121,3 +121,13 @@ variable "cpu_architecture" {
   type    = string
   default = "ARM64"
 }
+
+variable "cloudfront_access_control_header_value" {
+  type    = string
+  default = ""
+}
+
+variable "cloudfront_access_control_header_key" {
+  type    = string
+  default = "X-Origin-Access-Control"
+}
