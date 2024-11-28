@@ -29,7 +29,7 @@ module "core" {
   # ecr
   retention_image_count = 3
 
-  // gateway
+  # gateway
   cloudfront_access_control_header_key   = "X-Origin-Access-Control"
   cloudfront_access_control_header_value = data.aws_ssm_parameter.cloudfront_access_control_header_value.value
 }
