@@ -121,3 +121,8 @@ variable "cpu_architecture" {
   type    = string
   default = "ARM64"
 }
+
+variable "retention_period" {
+  type    = number
+  default = 365
+}
