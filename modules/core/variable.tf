@@ -122,6 +122,11 @@ variable "cpu_architecture" {
   default = "ARM64"
 }
 
+variable "retention_period" {
+  type    = number
+  default = 365
+}
+
 variable "cloudfront_access_control_header_value" {
   type    = string
   default = ""
