@@ -3,7 +3,10 @@ locals {
   vpc_name = "${var.service_name}-${var.env}-vpc"
 
   # sg
-  sg_alb_name = "${var.service_name}-${var.env}-wanrun-alb-sg"
+  sg_alb_name = "${var.service_name}-${var.env}-gateway-alb-sg"
+
+  # ssm
+  ssm_cloudfront_access_control_header_value = "${local.ssm_parameter_store_prefix}/CLOUDFRONT/ACCESS_CONTROL_HEADER/VALUE"
 }
 
 ###########################################
@@ -55,4 +58,9 @@ data "aws_security_group" "alb_sg" {
     name   = "tag:Name"
     values = [local.sg_alb_name]
   }
+}
+
+// cloudfrontのアクセスコントロールヘッダーの参照
+data "aws_ssm_parameter" "cloudfront_access_control_header_value" {
+  name = local.ssm_cloudfront_access_control_header_value
 }

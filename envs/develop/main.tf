@@ -1,6 +1,9 @@
+locals {
+  ssm_parameter_store_prefix = "/${upper(var.service_name)}/${upper(var.env)}"
+}
 variable "service_name" {
   type    = string
-  default = "wanrun"
+  default = "wr"
 }
 
 variable "env" {

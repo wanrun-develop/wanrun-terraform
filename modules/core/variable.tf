@@ -126,3 +126,13 @@ variable "retention_period" {
   type    = number
   default = 365
 }
+
+variable "cloudfront_access_control_header_value" {
+  type    = string
+  default = ""
+}
+
+variable "cloudfront_access_control_header_key" {
+  type    = string
+  default = "X-Origin-Access-Control"
+}

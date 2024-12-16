@@ -101,6 +101,11 @@ resource "aws_lb_listener_rule" "wanrun" {
   }
 
   condition {
+    # 他のアカウントのCloudFrontからアクセスされないようにアクセスコントローラーヘッダーを毎回バリデーション
+    http_header {
+      http_header_name = var.cloudfront_access_control_header_key
+      values           = [var.cloudfront_access_control_header_value]
+    }
     path_pattern {
       values = [local.wanrun.path_pattern]
     }
