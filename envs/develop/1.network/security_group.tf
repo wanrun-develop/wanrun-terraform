@@ -71,3 +71,31 @@ resource "aws_security_group" "gateway" {
     Name = "${var.service_name}-${var.env}-gateway-alb-sg"
   }
 }
+
+###########################################
+# Postgres on EC2
+###########################################
+resource "aws_security_group" "postgres_on_ec2" {
+  name        = "${var.service_name}-${var.env}-postgres-on-ec2-sg"
+  vpc_id      = aws_vpc.wanrun.id
+  description = "${var.service_name}-${var.env}-postgres-on-ec2-sg"
+
+  ingress {
+    description = "Allow all vpc"
+    from_port   = "5432"
+    protocol    = "tcp"
+    to_port     = "5432"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = "0"
+    protocol    = "-1"
+    to_port     = "0"
+  }
+
+  tags = {
+    Name = "${var.service_name}-${var.env}-postgres-on-ec2-sg"
+  }
+}
