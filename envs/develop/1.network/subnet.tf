@@ -4,7 +4,6 @@ data "aws_availability_zones" "available" {}
 # Public
 ###########################################
 resource "aws_subnet" "public_subnets" {
-  # for_each = toset(data.aws_availability_zones.available.names)
   for_each = { for az in data.aws_availability_zones.available.names : element(split("-", az), length(split("-", az)) - 1) => az }
 
 
@@ -22,7 +21,6 @@ resource "aws_subnet" "public_subnets" {
 # Private
 ###########################################
 resource "aws_subnet" "private_subnets" {
-  # for_each = toset(data.aws_availability_zones.available.names)
   for_each = { for az in data.aws_availability_zones.available.names : element(split("-", az), length(split("-", az)) - 1) => az }
 
   vpc_id            = aws_vpc.wanrun.id
