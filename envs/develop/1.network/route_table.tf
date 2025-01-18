@@ -13,7 +13,7 @@ resource "aws_route_table" "public" {
     Name = "${var.service_name}-${var.env}-public-rt"
   }
 
-  depends_on = [ aws_vpc.wanrun ]
+  depends_on = [aws_vpc.wanrun]
 }
 
 resource "aws_route_table_association" "public" {
@@ -21,8 +21,8 @@ resource "aws_route_table_association" "public" {
 
   subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
-  
-  depends_on = [ aws_route_table.public ]
+
+  depends_on = [aws_route_table.public]
 }
 
 
@@ -41,7 +41,7 @@ resource "aws_route_table" "private" {
     "Name" = "${var.service_name}-${var.env}-private-rt"
   }
 
-  depends_on = [ aws_vpc.wanrun ]
+  depends_on = [aws_vpc.wanrun]
 }
 
 resource "aws_route_table_association" "private" {
@@ -50,5 +50,5 @@ resource "aws_route_table_association" "private" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
 
-  depends_on = [ aws_route_table.private ]
+  depends_on = [aws_route_table.private]
 }

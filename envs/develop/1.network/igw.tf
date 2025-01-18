@@ -5,5 +5,5 @@ resource "aws_internet_gateway" "igw" {
     "Name" = "${var.service_name}-${var.env}-igw"
   }
 
-  depends_on = [ aws_vpc.wanrun ]
+  depends_on = [aws_vpc.wanrun]
 }
