@@ -10,24 +10,21 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${var.service_name}-${var.env}-public-route-table"
+    Name = "${var.service_name}-${var.env}-public-rt"
   }
+
+  depends_on = [aws_vpc.wanrun]
 }
 
-resource "aws_route_table_association" "public_1a" {
-  subnet_id      = aws_subnet.public_subnet_1a.id
+resource "aws_route_table_association" "public" {
+  for_each = aws_subnet.public_subnets
+
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
+
+  depends_on = [aws_route_table.public]
 }
 
-resource "aws_route_table_association" "public_1c" {
-  subnet_id      = aws_subnet.public_subnet_1c.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public_1d" {
-  subnet_id      = aws_subnet.public_subnet_1d.id
-  route_table_id = aws_route_table.public.id
-}
 
 ###########################################
 # Private
@@ -41,21 +38,17 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    "Name" = "${var.service_name}-${var.env}-private-route-table"
+    "Name" = "${var.service_name}-${var.env}-private-rt"
   }
+
+  depends_on = [aws_vpc.wanrun]
 }
 
-resource "aws_route_table_association" "private_1a" {
-  subnet_id      = aws_subnet.private_subnet_1a.id
-  route_table_id = aws_route_table.private.id
-}
+resource "aws_route_table_association" "private" {
+  for_each = aws_subnet.private_subnets
 
-resource "aws_route_table_association" "private_1c" {
-  subnet_id      = aws_subnet.private_subnet_1c.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
-}
 
-resource "aws_route_table_association" "private_1d" {
-  subnet_id      = aws_subnet.private_subnet_1d.id
-  route_table_id = aws_route_table.private.id
+  depends_on = [aws_route_table.private]
 }
