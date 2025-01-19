@@ -4,4 +4,6 @@ resource "aws_internet_gateway" "igw" {
   tags = {
     "Name" = "${var.service_name}-${var.env}-igw"
   }
+
+  depends_on = [aws_vpc.wanrun]
 }
