@@ -9,7 +9,7 @@ module "core" {
   certificate_arn = ""
 
   # alb
-  internal_gateway_security_groups = [data.aws_security_group.alb_sg.id]
+  internal_gateway_security_groups = [data.aws_security_group.internal_gateway_alb_sg.id]
   private_subnet_ids               = data.aws_subnets.private.ids
   alb_internal_gateway_idle_time   = 60
 
