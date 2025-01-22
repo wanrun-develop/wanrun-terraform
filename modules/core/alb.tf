@@ -1,17 +1,17 @@
-###########################################
-# backend
-###########################################
-resource "aws_lb" "wanrun_be" {
-  name               = "${var.service_name}-${var.env}-wanrun"
-  internal           = false
+#######################################################################
+#internal gateway
+#######################################################################
+resource "aws_lb" "internal_gateway" {
+  name               = "${var.service_name}-${var.env}-internal-gateway"
+  internal           = true
   load_balancer_type = "application"
-  security_groups    = [var.alb_wanrun_sgs]
-  subnets            = var.public_subnets
+  security_groups    = var.internal_gateway_security_groups
+  subnets            = var.private_subnet_ids
 
   enable_deletion_protection = true
   drop_invalid_header_fields = true
 
-  idle_timeout = var.alb_wanrun_idle_time // 1 ~ 4000
+  idle_timeout = var.alb_internal_gateway_idle_time // 1 ~ 4000
 
   access_logs {
     bucket  = var.alb_wanrun_access_log_bucket_id
@@ -20,13 +20,10 @@ resource "aws_lb" "wanrun_be" {
   }
 }
 
-resource "aws_lb_listener" "wanrun_be" {
-  load_balancer_arn = aws_lb.wanrun_be.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = var.ssl_policy // defalult: ELBSecurityPolicy-2016-08. ELBSecurityPolicy-TLS-1-2-2017-01, ELBSecurityPolicy-TLS-1-3-2021-06
-
-  certificate_arn = var.certificate_arn
+resource "aws_lb_listener" "internal_gateway" {
+  load_balancer_arn = aws_lb.internal_gateway.arn
+  port              = "80"
+  protocol          = "HTTP"
 
   default_action {
     type = "fixed-response"
@@ -36,4 +33,6 @@ resource "aws_lb_listener" "wanrun_be" {
       message_body = "Not found"
     }
   }
+
+  depends_on = [aws_lb.internal_gateway]
 }
