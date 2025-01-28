@@ -3,7 +3,7 @@ locals {
   vpc_name = "${var.service_name}-${var.env}-vpc"
 
   # sg
-  sg_alb_name = "${var.service_name}-${var.env}-gateway-alb-sg"
+  sg_internal_gateway_alb_name = "${var.service_name}-${var.env}-internal-gateway-alb-sg"
 
   # ssm
   ssm_cloudfront_access_control_header_value = "${local.ssm_parameter_store_prefix}/CLOUDFRONT/ACCESS_CONTROL_HEADER/VALUE"
@@ -48,7 +48,7 @@ data "aws_subnet_ids" "private" {
 }
 
 // alb sgの取得
-data "aws_security_group" "alb_sg" {
+data "aws_security_group" "internal_gateway_alb_sg" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.wanrun.id]
@@ -56,7 +56,7 @@ data "aws_security_group" "alb_sg" {
 
   filter {
     name   = "tag:Name"
-    values = [local.sg_alb_name]
+    values = [local.sg_internal_gateway_alb_name]
   }
 }
 
