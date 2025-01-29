@@ -28,6 +28,7 @@ module "core" {
   retention_period = 365
 
   # ecr
+  ecr_namespace         = "${var.service_name}-${var.env}-wanrun"
   retention_image_count = 3
 
   # gateway
