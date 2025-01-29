@@ -23,9 +23,14 @@ variable "cloudfront_acm_arn" {
   default = ""
 }
 
-variable "alb_wanrun_sgs" {
-  type    = string
-  default = ""
+variable "whitelist_locations" {
+  type    = list(string)
+  default = ["JP"]
+}
+
+variable "internal_gateway_security_groups" {
+  type    = list(string)
+  default = [""]
 }
 
 variable "public_subnets" {
@@ -33,7 +38,7 @@ variable "public_subnets" {
   default = []
 }
 
-variable "alb_wanrun_idle_time" {
+variable "alb_internal_gateway_idle_time" {
   type    = number
   default = 60
 }
@@ -135,4 +140,9 @@ variable "cloudfront_access_control_header_value" {
 variable "cloudfront_access_control_header_key" {
   type    = string
   default = "X-Origin-Access-Control"
+}
+
+variable "access_control_allow_origins" {
+  type    = list(string)
+  default = [""]
 }

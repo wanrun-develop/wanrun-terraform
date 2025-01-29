@@ -29,22 +29,20 @@ resource "aws_cloudfront_distribution" "main" {
 
   ### gateway側
   origin {
-    domain_name = aws_lb.wanrun_be.dns_name
+    domain_name = aws_lb.internal_gateway.dns_name
     origin_id   = local.backend_origin_id
+    // vpc origin
+    vpc_origin_config {
+      vpc_origin_id = aws_cloudfront_vpc_origin.main_internal_alb.id
+    }
 
     custom_origin_config {
       http_port                = 80
       https_port               = 443
-      origin_protocol_policy   = "https-only"
+      origin_protocol_policy   = "http-only" // vpc originのため
       origin_ssl_protocols     = ["TLSv1.2"]
       origin_keepalive_timeout = 60
       origin_read_timeout      = 60
-    }
-
-    // ALBで検証するためのアクセスコントロールヘッダー
-    custom_header {
-      name  = var.cloudfront_access_control_header_key
-      value = var.cloudfront_access_control_header_value
     }
   }
 
@@ -72,9 +70,11 @@ resource "aws_cloudfront_distribution" "main" {
   default_root_object = "index.html"
   #   web_acl_id          = var.main_waf_acl_id // 現状WAFなしで進める
 
+  // 国の指定
   restrictions {
     geo_restriction {
-      restriction_type = "none"
+      restriction_type = "whitelist"
+      locations        = var.whitelist_locations
     }
   }
 
@@ -84,11 +84,15 @@ resource "aws_cloudfront_distribution" "main" {
     ssl_support_method       = "sni-only"
   }
 
-  #   logging_config {
-  #     include_cookies = false
-  #     bucket          = "${var.service_name}-${var.env}-main-cloudfront-log"
-  #     prefix          = "cloudfront/main/"
-  #   }
+  // NOTE: 本番だけログあり
+  dynamic "logging_config" {
+    for_each = var.env == "prod" ? toset(["create"]) : toset([])
+    content {
+      include_cookies = false
+      bucket          = "${var.service_name}-${var.env}-main-cloudfront-log"
+      prefix          = "cloudfront/main/"
+    }
+  }
 
   custom_error_response {
     error_code            = 403
@@ -110,7 +114,7 @@ resource "aws_cloudfront_response_headers_policy" "frontend" {
     }
     # Strict-Transport-Security: HTTPSを強制
     dynamic "strict_transport_security" {
-      for_each = var.env == "prod" ? [1] : [] // 本番環境のみ有効化
+      for_each = var.env == "prod" ? toset(["create"]) : toset([]) // 本番環境のみ有効化
       content {
         access_control_max_age_sec = 63072000 // 2年間
         include_subdomains         = true     // サブドメインを含めるか
@@ -123,7 +127,6 @@ resource "aws_cloudfront_response_headers_policy" "frontend" {
       referrer_policy = "strict-origin-when-cross-origin" // オリジン情報のみが送信
       override        = true
     }
-
 
     # X-Content-Type-Options: コンテンツタイプのスニッフィングを防止
     content_type_options {
@@ -192,7 +195,7 @@ resource "aws_cloudfront_response_headers_policy" "gateway" {
 
     # Strict-Transport-Security: HTTPSを強制
     dynamic "strict_transport_security" {
-      for_each = var.env == "prod" ? [1] : [] // 本番環境のみ有効化
+      for_each = var.env == "prod" ? toset(["create"]) : toset([]) // 本番環境のみ有効化
       content {
         access_control_max_age_sec = 63072000 // 2年間
         include_subdomains         = true     // サブドメインを含めるか
@@ -237,7 +240,7 @@ resource "aws_cloudfront_response_headers_policy" "gateway" {
 
     # 許可するオリジン
     access_control_allow_origins {
-      items = ["https://wanrun.com"]
+      items = var.access_control_allow_origins
     }
 
     # その他のCORS設定
