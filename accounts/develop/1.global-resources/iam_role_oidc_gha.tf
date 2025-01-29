@@ -104,6 +104,33 @@ data "aws_iam_policy_document" "github_actions" {
       values   = ["ecs-tasks.amazonaws.com"]
     }
   }
+
+  statement {
+    sid    = "S3Access"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:ListBucket"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.service_name}-develop",
+      "arn:aws:s3:::${var.service_name}-develop/*"
+    ]
+  }
+
+  // TODO: cloudfront distribution idを生成後にハードコーディング
+  # statement {
+  #   sid       = "CloudFrontInvalidation"
+  #   effect    = "Allow"
+  #   actions   = [
+  #     "cloudfront:CreateInvalidation",
+  #     "cloudfront:GetDistribution",
+  #     "cloudfront:GetDistributionConfig"
+  #   ]
+  #   resources = [
+  #     "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
+  #   ]
+  # }
 }
 
 resource "aws_iam_policy" "github_actions" {
