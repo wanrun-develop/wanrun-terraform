@@ -91,7 +91,7 @@ resource "aws_lb_target_group" "wanrun" {
 # alb listener rule
 ###########################################
 resource "aws_lb_listener_rule" "wanrun" {
-  listener_arn = aws_lb_listener.wanrun_be.arn
+  listener_arn = aws_lb_listener.internal_gateway.arn
   priority     = local.wanrun.priority
 
   action {
@@ -101,11 +101,6 @@ resource "aws_lb_listener_rule" "wanrun" {
   }
 
   condition {
-    # 他のアカウントのCloudFrontからアクセスされないようにアクセスコントローラーヘッダーを毎回バリデーション
-    http_header {
-      http_header_name = var.cloudfront_access_control_header_key
-      values           = [var.cloudfront_access_control_header_value]
-    }
     path_pattern {
       values = [local.wanrun.path_pattern]
     }
@@ -215,6 +210,14 @@ resource "aws_ecs_task_definition" "wanrun" {
   )
 
   lifecycle {
-    ignore_changes = [cpu, memory, task_role_arn, execution_role_arn, container_definitions, family, runtime_platform]
+    ignore_changes = [
+      cpu,
+      memory,
+      task_role_arn,
+      execution_role_arn,
+      container_definitions,
+      family,
+      runtime_platform
+    ]
   }
 }

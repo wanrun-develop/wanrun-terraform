@@ -3,7 +3,7 @@
 ###########################################
 resource "aws_iam_role" "wanrun_ecs_task_role" {
   name        = "${var.service_name}-${var.env}-ecs-task-role"
-  description = "EcsRaskRole"
+  description = "EcsTaskRole"
   assume_role_policy = jsonencode(
     {
       "Statement" : [
@@ -57,8 +57,8 @@ resource "aws_iam_policy" "wanrun_ecs_task_role_policy" {
         "s3:DeleteObject"
       ],
       "Resource" : [
-        "arn:aws:s3:::${var.service_name}-${var.env}-wanrun",
-        "arn:aws:s3:::${var.service_name}-${var.env}-wanrun/*"
+        "${aws_s3_bucket.cms.arn}",
+        "${aws_s3_bucket.cms.arn}/*"
       ]
     },
     {
