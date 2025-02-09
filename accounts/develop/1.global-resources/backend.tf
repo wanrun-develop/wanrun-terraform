@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     encrypt = true
-    bucket  = "wanrun-develop-terraform-tfstate"
+    bucket  = "wanrun-develop-140023401081-terraform-tfstate"
     region  = "ap-northeast-1"
     key     = "global-resources/terraform.tfstate"
     # TODO: 共同開発が始まったら作成

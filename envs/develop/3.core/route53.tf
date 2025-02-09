@@ -2,10 +2,6 @@
 #######################################################################
 # route53
 #######################################################################
-resource "aws_route53_zone" "wanrun" {
-  name = "wanrun.jp"
-}
-
 resource "aws_route53_record" "wanrun" {
   zone_id = aws_route53_zone.wanrun.zone_id
   name    = ""

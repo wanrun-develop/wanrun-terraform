@@ -6,7 +6,7 @@ locals {
     "wanrun-webapp",
     "wanrun",
     "wanrun-terraform",
-    "wanrun-mobile",
+    "wanrun-mobile"
   ]
 
   github_org_name = "wanrun-develop"
