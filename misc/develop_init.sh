@@ -8,9 +8,11 @@
 ORG_NAME="wanrun"
 REGION="ap-northeast-1"
 ENV="develop"
-BUCKET_NAME="$ORG_NAME-$ENV-terraform-tfstate"
+AWS_ACCOUNT_ID="140023401081"
+BUCKET_NAME="$ORG_NAME-$ENV-$AWS_ACCOUNT_ID-terraform-tfstate"
 DYNAMODB_TABLE="$ORG_NAME-terraform-state-lock"
-PROFILE_NAME="{各自のprofile_nameを入れる}"
+# PROFILE_NAME="{各自のprofile_nameを入れる}"
+PROFILE_NAME="wanrun"
 
 # Create S3 bucket for terraform state
 aws s3api create-bucket \
@@ -37,6 +39,27 @@ aws s3api put-bucket-encryption \
         ]
     }'
 
+aws s3api put-bucket-policy \
+    --bucket $BUCKET_NAME \
+    --profile $PROFILE_NAME \
+    --policy '{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Deny",
+                "Action": "s3:*",
+                "Resource": "arn:aws:s3:::'"$BUCKET_NAME"'/*",
+                "Principal": "*",
+                "Condition": {
+                    "Bool": {
+                        "aws:SecureTransport": "false"
+                    }
+                }
+            }
+        ]
+    }'
+
+echo "S3 bucket $BUCKET_NAME created and configured with security settings."
 # TODO: 共同開発が始まったら作成
 # Create DynamoDB table for terraform state lock
 # aws dynamodb create-table \
