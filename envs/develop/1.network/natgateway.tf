@@ -6,5 +6,5 @@ resource "aws_nat_gateway" "main" {
   tags = {
     Name = "${var.service_name}-${var.env}-main-ntgw"
   }
-  depends_on = [aws_internet_gateway.igw]
+  depends_on = [aws_internet_gateway.main]
 }

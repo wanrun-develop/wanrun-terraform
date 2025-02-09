@@ -3,15 +3,13 @@
 ###########################################
 resource "aws_security_group" "vpc_endpoint" {
   name        = "${var.service_name}-${var.env}-vpc-endpoint"
-  vpc_id      = aws_vpc.wanrun.id
+  vpc_id      = aws_vpc.main.id
   description = "vpc-endpoint"
 }
 
 resource "aws_vpc_security_group_egress_rule" "vpc_endpoint_egress" {
   ip_protocol = "-1"
   cidr_ipv4   = "0.0.0.0/0"
-  from_port   = "0"
-  to_port     = "0"
   description = "Allow all"
 
   security_group_id = aws_security_group.vpc_endpoint.id
@@ -24,8 +22,6 @@ resource "aws_vpc_security_group_egress_rule" "vpc_endpoint_egress" {
 resource "aws_vpc_security_group_ingress_rule" "vpc_endpoint_ingress" {
   ip_protocol = "-1"
   cidr_ipv4   = var.vpc_cidr
-  from_port   = "0"
-  to_port     = "0"
   description = "Allow this vpc"
 
   security_group_id = aws_security_group.vpc_endpoint.id
@@ -40,7 +36,7 @@ resource "aws_vpc_security_group_ingress_rule" "vpc_endpoint_ingress" {
 #######################################################################
 resource "aws_security_group" "internal_gateway" {
   name        = "${var.service_name}-${var.env}-internal-gateway-alb-sg"
-  vpc_id      = aws_vpc.wanrun.id
+  vpc_id      = aws_vpc.main.id
   description = "${var.service_name}-${var.env}-internal-gateway-alb-sg"
 
   tags = {
@@ -60,9 +56,7 @@ resource "aws_vpc_security_group_ingress_rule" "cloudfront_managed_prefix_list" 
 
 resource "aws_vpc_security_group_egress_rule" "internal_gateway" {
   security_group_id = aws_security_group.internal_gateway.id
-  from_port         = "0"
   ip_protocol       = "-1"
-  to_port           = "0"
   cidr_ipv4         = "0.0.0.0/0"
 }
 
@@ -83,7 +77,7 @@ resource "aws_vpc_security_group_egress_rule" "internal_gateway" {
 #######################################################################
 resource "aws_security_group" "postgres_on_ec2" {
   name   = "${var.service_name}-${var.env}-postgres-on-ec2-sg"
-  vpc_id = aws_vpc.wanrun.id
+  vpc_id = aws_vpc.main.id
 
   tags = {
     Name = "${var.service_name}-${var.env}-postgres-on-ec2-sg"
@@ -101,8 +95,6 @@ resource "aws_vpc_security_group_ingress_rule" "postgres_on_ec2" {
 
 resource "aws_vpc_security_group_egress_rule" "postgres_on_ec2" {
   security_group_id = aws_security_group.postgres_on_ec2.id
-  from_port         = "0"
   ip_protocol       = "-1"
-  to_port           = "0"
   cidr_ipv4         = "0.0.0.0/0"
 }

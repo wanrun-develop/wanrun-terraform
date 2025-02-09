@@ -2,18 +2,18 @@
 # Public
 ###########################################
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.wanrun.id
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.main.id
   }
 
   tags = {
     Name = "${var.service_name}-${var.env}-public-rt"
   }
 
-  depends_on = [aws_vpc.wanrun]
+  depends_on = [aws_vpc.main]
 }
 
 resource "aws_route_table_association" "public" {
@@ -30,7 +30,7 @@ resource "aws_route_table_association" "public" {
 # Private
 ###########################################
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.wanrun.id
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -41,7 +41,7 @@ resource "aws_route_table" "private" {
     "Name" = "${var.service_name}-${var.env}-private-rt"
   }
 
-  depends_on = [aws_vpc.wanrun]
+  depends_on = [aws_vpc.main]
 }
 
 resource "aws_route_table_association" "private" {
