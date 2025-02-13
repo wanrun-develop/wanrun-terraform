@@ -2,7 +2,7 @@
 # web
 ###########################################
 resource "aws_s3_bucket" "web" {
-  bucket = "${var.service_name}-${var.env}"
+  bucket = "${var.service_name}-${var.env}-webapp"
 }
 
 resource "aws_s3_bucket_public_access_block" "web" {

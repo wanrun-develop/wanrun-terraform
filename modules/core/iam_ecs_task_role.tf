@@ -45,32 +45,35 @@ resource "aws_iam_policy" "ecs_exec" {
 resource "aws_iam_policy" "wanrun_ecs_task_role_policy" {
   name = "${var.service_name}-${var.env}-task-role-policy"
   path = "/"
-
-  policy = jsonencode(
-    {
-      "Sid" : "s3",
-      "Effect" : "Allow",
-      "Action" : [
-        "s3:List*",
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject"
-      ],
-      "Resource" : [
-        "${aws_s3_bucket.cms.arn}",
-        "${aws_s3_bucket.cms.arn}/*"
-      ]
-    },
-    {
-      "Sid" : "KMSPolicy",
-      "Effect" : "Allow",
-      "Action" : [
-        "kms:Decrypt",
-        "kms:GenerateDataKey"
-      ],
-      "Resource" : "${var.kms_key_arn}"
-    }
-  )
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Sid" : "s3",
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:List*",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+        ],
+        "Resource" : [
+          "${aws_s3_bucket.cms.arn}",
+          "${aws_s3_bucket.cms.arn}/*"
+        ]
+      },
+      {
+        "Sid" : "KMSPolicy",
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ],
+        # "Resource" : "${var.kms_key_arn}" //NOTE: KMS管理する場合指定
+        "Resource" : "*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "wanrun_ecs_task_role_1" {

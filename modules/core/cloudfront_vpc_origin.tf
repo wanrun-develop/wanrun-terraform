@@ -17,5 +17,5 @@ resource "aws_cloudfront_vpc_origin" "main_internal_alb" {
   tags = {
     "Name" = "${var.service_name}-${var.env}-main-internal-alb"
   }
-  depends_on = [aws_lb.wanrun_be]
+  depends_on = [aws_lb.internal_gateway]
 }

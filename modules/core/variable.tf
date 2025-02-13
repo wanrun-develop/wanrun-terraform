@@ -58,11 +58,6 @@ variable "ssl_policy" {
   default = "ELBSecurityPolicy-2016-08"
 }
 
-variable "certificate_arn" {
-  type    = string
-  default = ""
-}
-
 variable "is_container_insights" {
   type    = bool
   default = false
@@ -130,16 +125,6 @@ variable "cpu_architecture" {
 variable "retention_period" {
   type    = number
   default = 365
-}
-
-variable "cloudfront_access_control_header_value" {
-  type    = string
-  default = ""
-}
-
-variable "cloudfront_access_control_header_key" {
-  type    = string
-  default = "X-Origin-Access-Control"
 }
 
 variable "access_control_allow_origins" {

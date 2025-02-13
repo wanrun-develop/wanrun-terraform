@@ -19,7 +19,7 @@ locals {
 # ecr
 ###########################################
 resource "aws_ecr_repository" "wanrun" {
-  name = "${var.ecr_namespace}-${local.wanrun.service_name}"
+  name = var.ecr_namespace
 
   image_scanning_configuration {
     scan_on_push = true
@@ -39,6 +39,7 @@ data "aws_ecr_lifecycle_policy_document" "wanrun" {
       tag_status   = "untagged"
       count_type   = "sinceImagePushed"
       count_number = 1
+      count_unit   = "days"
     }
     action {
       type = "expire"
@@ -102,7 +103,7 @@ resource "aws_lb_listener_rule" "wanrun" {
 
   condition {
     path_pattern {
-      values = [local.wanrun.path_pattern]
+      values = local.wanrun.path_pattern
     }
   }
 }
