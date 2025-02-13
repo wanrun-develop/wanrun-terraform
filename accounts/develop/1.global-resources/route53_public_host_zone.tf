@@ -28,6 +28,7 @@ resource "aws_route53_record" "wanrun_dns_verify" {
 }
 
 resource "aws_acm_certificate_validation" "public" {
+  provider                = aws.virginia
   certificate_arn         = aws_acm_certificate.wanrun.arn
   validation_record_fqdns = [for record in aws_route53_record.wanrun_dns_verify : record.fqdn]
 }
