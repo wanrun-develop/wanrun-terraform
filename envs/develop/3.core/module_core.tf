@@ -1,15 +1,18 @@
 module "core" {
   source = "../../../modules/core"
 
-  service_name = var.service_name
-  env          = var.env
-  #   main_domain = var.web_front_domain
-  # main_waf_acl_id = 
-  # cloudfront_acm_arn = 
-  certificate_arn = ""
+  providers = {
+    aws.virginia = aws.virginia
+  }
+  service_name       = var.service_name
+  env                = var.env
+  main_domain        = data.aws_acm_certificate.wanrun_jp.domain
+  cloudfront_acm_arn = data.aws_acm_certificate.wanrun_jp.arn
+  # main_waf_acl_id =  // NOTE: WAFを使う場合
 
   # alb
   internal_gateway_security_groups = [data.aws_security_group.internal_gateway_alb_sg.id]
+  vpc_id                           = data.aws_vpc.wanrun.id
   private_subnet_ids               = data.aws_subnets.private.ids
   alb_internal_gateway_idle_time   = 60
 
@@ -32,8 +35,6 @@ module "core" {
   retention_image_count = 3
 
   # gateway
-  cloudfront_access_control_header_key   = "X-Origin-Access-Control"
-  cloudfront_access_control_header_value = data.aws_ssm_parameter.cloudfront_access_control_header_value.value
-  whitelist_locations                    = ["JP"]                 // 許可する国指定
-  access_control_allow_origins           = ["https://wanrun.com"] // TODO: 購入したドメイン名
+  whitelist_locations          = ["JP"] // NOTE: 許可する国指定
+  access_control_allow_origins = ["https://wanrun.jp"]
 }

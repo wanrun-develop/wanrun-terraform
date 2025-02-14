@@ -5,8 +5,11 @@ locals {
   # sg
   sg_internal_gateway_alb_name = "${var.service_name}-${var.env}-internal-gateway-alb-sg"
 
-  # ssm
-  ssm_cloudfront_access_control_header_value = "${local.ssm_parameter_store_prefix}/CLOUDFRONT/ACCESS_CONTROL_HEADER/VALUE"
+  # route53
+  route53_zone_name = "wanrun.jp"
+
+  # acm
+  acm_name = "wanrun.jp"
 }
 
 ###########################################
@@ -23,13 +26,16 @@ data "aws_vpc" "wanrun" {
 data "aws_subnets" "vpc" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.wanrun]
+    values = [data.aws_vpc.wanrun.id]
   }
 }
 
 // Publicのsubnetsを取得
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.wanrun.id
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
 
   filter {
     name   = "tag:Tier"
@@ -38,8 +44,11 @@ data "aws_subnet_ids" "public" {
 }
 
 // Privateのsubnetsを取得
-data "aws_subnet_ids" "private" {
-  vpc_id = data.aws_vpc.wanrun.id
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
 
   filter {
     name   = "tag:Tier"
@@ -60,7 +69,14 @@ data "aws_security_group" "internal_gateway_alb_sg" {
   }
 }
 
-// cloudfrontのアクセスコントロールヘッダーの参照
-data "aws_ssm_parameter" "cloudfront_access_control_header_value" {
-  name = local.ssm_cloudfront_access_control_header_value
+data "aws_route53_zone" "wanrun_jp" {
+  provider = aws.virginia
+
+  name         = local.route53_zone_name
+  private_zone = false
+}
+
+data "aws_acm_certificate" "wanrun_jp" {
+  provider = aws.virginia
+  domain   = local.acm_name
 }

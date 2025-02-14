@@ -1,10 +1,10 @@
 
 #######################################################################
-# route53
+# route53 record
 #######################################################################
 resource "aws_route53_record" "wanrun" {
-  zone_id = aws_route53_zone.wanrun.zone_id
-  name    = ""
+  zone_id = data.aws_route53_zone.wanrun_jp.id
+  name    = "" // NOTE: ネイキッドドメインの指定
   type    = "A"
 
   alias {

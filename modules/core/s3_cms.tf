@@ -54,6 +54,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "cms" {
       days_after_initiation = 1
     }
   }
+
+  depends_on = [aws_s3_bucket.cms]
 }
 
 resource "aws_s3_bucket_versioning" "cms" {

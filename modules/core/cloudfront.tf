@@ -1,6 +1,7 @@
 locals {
   backend_origin_id = "gateway"
 }
+
 #######################################################################
 # wanrun
 #######################################################################
@@ -10,12 +11,12 @@ resource "aws_cloudfront_distribution" "main" {
   ### フロントエンドの定義
   origin {
     domain_name              = aws_s3_bucket.web.bucket_regional_domain_name
-    origin_id                = aws_s3_bucket.web.id
+    origin_id                = aws_s3_bucket.web.bucket_regional_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
   default_cache_behavior {
-    target_origin_id       = aws_s3_bucket.web.id
+    target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -30,25 +31,27 @@ resource "aws_cloudfront_distribution" "main" {
   ### gateway側
   origin {
     domain_name = aws_lb.internal_gateway.dns_name
-    origin_id   = local.backend_origin_id
+    origin_id   = aws_cloudfront_vpc_origin.main_internal_alb.vpc_origin_endpoint_config[0].name
     // vpc origin
     vpc_origin_config {
-      vpc_origin_id = aws_cloudfront_vpc_origin.main_internal_alb.id
+      vpc_origin_id            = aws_cloudfront_vpc_origin.main_internal_alb.id
+      origin_keepalive_timeout = 5  // CloudFront がオリジンへの接続を維持する秒数
+      origin_read_timeout      = 30 // CloudFront がオリジンからの応答を待機する秒数
     }
 
-    custom_origin_config {
-      http_port                = 80
-      https_port               = 443
-      origin_protocol_policy   = "http-only" // vpc originのため
-      origin_ssl_protocols     = ["TLSv1.2"]
-      origin_keepalive_timeout = 60
-      origin_read_timeout      = 60
-    }
+    # custom_origin_config {
+    #   http_port                = 80
+    #   https_port               = 443
+    #   origin_protocol_policy   = "https-only" // vpc originのため
+    #   origin_ssl_protocols     = ["TLSv1.2"]
+    #   origin_keepalive_timeout = 60
+    #   origin_read_timeout      = 60
+    # }
   }
 
   ordered_cache_behavior {
-    path_pattern           = "/gateway/*"
-    target_origin_id       = local.backend_origin_id
+    path_pattern           = "/wanrun/*"
+    target_origin_id       = aws_cloudfront_vpc_origin.main_internal_alb.vpc_origin_endpoint_config[0].name
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
@@ -61,14 +64,14 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   ### 共通
-  #   aliases = [
-  #     var.main_domain
-  #   ]
+  aliases = [
+    var.main_domain
+  ]
 
   is_ipv6_enabled     = true
   price_class         = "PriceClass_200" // PriceClass_100
   default_root_object = "index.html"
-  #   web_acl_id          = var.main_waf_acl_id // 現状WAFなしで進める
+  #   web_acl_id          = var.main_waf_acl_id // NOTE: 現状WAFなしで進める
 
   // 国の指定
   restrictions {
@@ -98,6 +101,7 @@ resource "aws_cloudfront_distribution" "main" {
     error_code            = 403
     error_caching_min_ttl = 60
     response_page_path    = "/"
+    response_code         = 403
   }
 }
 
@@ -260,13 +264,7 @@ resource "aws_cloudfront_origin_request_policy" "gateway" {
     header_behavior = "whitelist" // 指定されたヘッダーのみを転送
     headers {
       items = [
-        # "CloudFront-Is-Tablet-Viewer",
-        # "CloudFront-Is-Mobile-Viewer",
-        # "CloudFront-Is-SmartTV-Viewer",
-        # "CloudFront-Is-Android-Viewer",
-        # "CloudFront-Is-IOS-Viewer",
-        # "CloudFront-Is-Desktop-Viewer",
-        "Authorization",
+        # "Authorization",
         "Content-Type",
         "Referer"
       ]
