@@ -2,9 +2,6 @@ locals {
   # vpc
   vpc_name = "${var.service_name}-${var.env}-vpc"
 
-  # sg
-  sg_internal_gateway_alb_name = "${var.service_name}-${var.env}-internal-gateway-alb-sg"
-
   # route53
   route53_zone_name = "wanrun.jp"
 
@@ -53,19 +50,6 @@ data "aws_subnets" "private" {
   filter {
     name   = "tag:Tier"
     values = ["Private"]
-  }
-}
-
-// alb sgの取得
-data "aws_security_group" "internal_gateway_alb_sg" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.wanrun.id]
-  }
-
-  filter {
-    name   = "tag:Name"
-    values = [local.sg_internal_gateway_alb_name]
   }
 }
 

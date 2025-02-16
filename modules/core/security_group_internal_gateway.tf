@@ -11,9 +11,9 @@ resource "aws_security_group" "internal_gateway" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "cloudfront_managed_prefix_list" {
+resource "aws_vpc_security_group_ingress_rule" "internal_gateway" {
   security_group_id            = aws_security_group.internal_gateway.id
-  description                  = "Allow CloudFront IPs"
+  description                  = "Allow VPC Origin"
   ip_protocol                  = "tcp"
   from_port                    = 80
   to_port                      = 80
