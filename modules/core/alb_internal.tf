@@ -5,7 +5,7 @@ resource "aws_lb" "internal_gateway" {
   name               = "${var.service_name}-${var.env}-internal-gateway"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = var.internal_gateway_security_groups
+  security_groups    = [aws_security_group.internal_gateway.id]
   subnets            = var.private_subnet_ids
 
   enable_deletion_protection = true

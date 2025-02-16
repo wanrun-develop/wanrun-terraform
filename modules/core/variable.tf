@@ -28,11 +28,6 @@ variable "whitelist_locations" {
   default = ["JP"]
 }
 
-variable "internal_gateway_security_groups" {
-  type    = list(string)
-  default = [""]
-}
-
 variable "public_subnets" {
   type    = list(string)
   default = []

@@ -1,7 +1,3 @@
-locals {
-  backend_origin_id = "gateway"
-}
-
 #######################################################################
 # wanrun
 #######################################################################
@@ -38,15 +34,6 @@ resource "aws_cloudfront_distribution" "main" {
       origin_keepalive_timeout = 5  // CloudFront がオリジンへの接続を維持する秒数
       origin_read_timeout      = 30 // CloudFront がオリジンからの応答を待機する秒数
     }
-
-    # custom_origin_config {
-    #   http_port                = 80
-    #   https_port               = 443
-    #   origin_protocol_policy   = "https-only" // vpc originのため
-    #   origin_ssl_protocols     = ["TLSv1.2"]
-    #   origin_keepalive_timeout = 60
-    #   origin_read_timeout      = 60
-    # }
   }
 
   ordered_cache_behavior {
@@ -104,7 +91,6 @@ resource "aws_cloudfront_distribution" "main" {
     response_code         = 403
   }
 }
-
 
 #######################################################################
 # フロントエンドがoriginの設定

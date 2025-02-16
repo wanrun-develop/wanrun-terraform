@@ -11,10 +11,9 @@ module "core" {
   # main_waf_acl_id =  // NOTE: WAFを使う場合
 
   # alb
-  internal_gateway_security_groups = [data.aws_security_group.internal_gateway_alb_sg.id]
-  vpc_id                           = data.aws_vpc.wanrun.id
-  private_subnet_ids               = data.aws_subnets.private.ids
-  alb_internal_gateway_idle_time   = 60
+  vpc_id                         = data.aws_vpc.wanrun.id
+  private_subnet_ids             = data.aws_subnets.private.ids
+  alb_internal_gateway_idle_time = 60
 
   // 本番のみ設定をする
   # alb_wanrun_access_log_bucket_id = ""
