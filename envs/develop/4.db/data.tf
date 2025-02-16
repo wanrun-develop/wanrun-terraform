@@ -20,13 +20,16 @@ data "aws_vpc" "wanrun" {
 data "aws_subnets" "vpc" {
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.wanrun]
+    values = [data.aws_vpc.wanrun.id]
   }
 }
 
 // Publicのsubnetsを取得
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.wanrun.id
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
 
   filter {
     name   = "tag:Tier"
@@ -35,8 +38,11 @@ data "aws_subnet_ids" "public" {
 }
 
 // Privateのsubnetsを取得
-data "aws_subnet_ids" "private" {
-  vpc_id = data.aws_vpc.wanrun.id
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
 
   filter {
     name   = "tag:Tier"

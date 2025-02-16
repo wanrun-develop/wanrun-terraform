@@ -5,7 +5,7 @@ module "db_ec2" {
   env          = var.env
 
   # network
-  subnet_id          = element(data.aws_subnet_ids.private.ids, 0)
+  subnet_id          = element(data.aws_subnets.private.ids, 0)
   security_group_ids = [data.aws_security_group.postgres_on_ec2_sg.id]
 
   # ec2
