@@ -2,7 +2,7 @@
 # ec2 postgres
 ####################################################################
 resource "aws_instance" "main" {
-  ami                         = data.aws_ami.amazonlinux_2023.id
+  ami                         = data.aws_ssm_parameter.amazonlinux_2023.value
   instance_type               = var.ec2_instance_type
   subnet_id                   = var.subnet_id
   associate_public_ip_address = false
