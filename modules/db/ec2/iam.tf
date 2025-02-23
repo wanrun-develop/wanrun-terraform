@@ -51,3 +51,12 @@ data "aws_iam_policy_document" "postgres_main_db" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy" "AmazonSSMManagedInstanceCore" {
+  arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "postgres_main_db_AmazonSSMManagedInstanceCore" {
+  role       = aws_iam_role.postgres_main_db.name
+  policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
+}
