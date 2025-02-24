@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "github_actions" {
   }
 
   statement {
-    sid    = "Taskdefiniton"
+    sid    = "Taskdefinition"
     effect = "Allow"
     actions = [
       "ecs:DescribeTaskDefinition",
