@@ -1,0 +1,15 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Wanrun on EC2",
+      "Group": "Servers",
+      "Host": "host.docker.internal",
+      "Port": 15432,
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "Password": "postgres",
+      "SSLMode": "prefer",
+      "ConnectNow": true
+    }
+  }
+}
