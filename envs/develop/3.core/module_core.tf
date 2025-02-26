@@ -4,10 +4,13 @@ module "core" {
   providers = {
     aws.virginia = aws.virginia
   }
+
+  # environment setting
   service_name       = var.service_name
   env                = var.env
   main_domain        = data.aws_acm_certificate.wanrun_jp.domain
   cloudfront_acm_arn = data.aws_acm_certificate.wanrun_jp.arn
+  ssm_prefix         = local.ssm_parameter_store_prefix
   # main_waf_acl_id =  // NOTE: WAFを使う場合
 
   # alb
