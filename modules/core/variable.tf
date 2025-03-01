@@ -126,3 +126,8 @@ variable "access_control_allow_origins" {
   type    = list(string)
   default = [""]
 }
+
+variable "ssm_prefix" {
+  type    = string
+  default = ""
+}

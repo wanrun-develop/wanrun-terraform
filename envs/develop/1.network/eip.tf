@@ -5,5 +5,5 @@ resource "aws_eip" "ntgw" {
     "Name" = "${var.service_name}-${var.env}-nat-gateway-ip"
   }
 
-  depends_on = [ aws_internet_gateway.main ]
+  depends_on = [aws_internet_gateway.main]
 }

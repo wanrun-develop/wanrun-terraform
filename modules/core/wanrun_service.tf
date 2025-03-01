@@ -204,21 +204,27 @@ resource "aws_ecs_task_definition" "wanrun" {
             "containerPort" : 8080
           }
         ],
-        "environment" : local.wanrun.container_environment
-        "secrets" : local.wanrun.container_secrets
+        "environment" : [
+          {
+            "name" : "JWT_EXP_TIME",
+            "value" : "3"
+          },
+          {
+            "name" : "REFRESH_JWT_EXP_TIME",
+            "value" : "72"
+          },
+          {
+            "name" : "AWS_S3_BUCKET_NAME",
+            "value" : "__SERVICE_NAME__-__ENV__-cms"
+          }
+        ]
+        "secrets" : [
+          {
+            "name" : "SECRET_KEY"
+            "valueFrom" : "/__UPPERCASE_SERVICE_NAME__/__UPPERCASE_ENV__/WANRUN/SECRET_KEY"
+          }
+        ]
       }
     ]
   )
-
-  lifecycle {
-    ignore_changes = [
-      cpu,
-      memory,
-      task_role_arn,
-      execution_role_arn,
-      container_definitions,
-      family,
-      runtime_platform
-    ]
-  }
 }
