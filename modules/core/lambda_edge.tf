@@ -1,6 +1,6 @@
 
 #######################################################################
-# lambda edge
+# wanrun server side rendering
 #######################################################################
 resource "aws_lambda_function" "wanrun_ssr" {
   provider      = aws.virginia
@@ -25,7 +25,7 @@ data "archive_file" "wanrun_ssr" {
 }
 
 #######################################################################
-# ima lambda edge
+# iam wanrun server side rendering
 #######################################################################
 data "aws_iam_policy_document" "lambda_edge_assume_role_policy" {
   statement {
@@ -69,7 +69,7 @@ resource "aws_iam_role_policy" "wanrun_ssr" {
 }
 
 #######################################################################
-# cloudwatch log lambda edge
+# cloudwatch log wanrun server side rendering
 #######################################################################
 resource "aws_cloudwatch_log_group" "wanrun_ssr" {
   provider      = aws.virginia
