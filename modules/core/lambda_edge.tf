@@ -72,6 +72,6 @@ resource "aws_iam_role_policy" "wanrun_ssr" {
 # cloudwatch log wanrun server side rendering
 #######################################################################
 resource "aws_cloudwatch_log_group" "wanrun_ssr" {
-  provider      = aws.virginia
-  name = "/aws/lambda/${var.service_name}-${var.env}-wanrun-ssr"
+  provider = aws.virginia
+  name     = "/aws/lambda/${var.service_name}-${var.env}-wanrun-ssr"
 }
