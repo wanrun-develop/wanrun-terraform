@@ -37,4 +37,8 @@ resource "aws_instance" "main" {
       Name = "${var.service_name}-${var.env}-main-db"
     }
   }
+
+  lifecycle {
+    ignore_changes = [user_data]
+  }
 }
