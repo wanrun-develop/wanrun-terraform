@@ -46,15 +46,15 @@ resource "aws_cloudfront_distribution" "main" {
 
   ### SSR
   origin {
-    domain_name        = replace(replace(aws_lambda_function_url.internal_wanrun_ssr.function_url, "https://", ""), "/", "")
-    origin_id = aws_lambda_function.internal_wanrun_ssr.function_name
+    domain_name = replace(replace(aws_lambda_function_url.internal_wanrun_ssr.function_url, "https://", ""), "/", "")
+    origin_id   = aws_lambda_function.internal_wanrun_ssr.function_name
 
     # oac
     origin_access_control_id = aws_cloudfront_origin_access_control.internal_wanrun_ssr.id
 
     custom_origin_config {
-      http_port = 80
-      https_port = 443
+      http_port              = 80
+      https_port             = 443
       origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }

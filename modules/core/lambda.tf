@@ -5,12 +5,12 @@ resource "aws_lambda_function" "internal_wanrun_ssr" {
   function_name = "${var.service_name}-${var.env}-internal-wanrun-ssr"
   description   = "Server Side Rendering"
 
-  role    = aws_iam_role.wanrun_ssr.arn
+  role         = aws_iam_role.wanrun_ssr.arn
   package_type = "Image"
   image_uri    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/lambda-initialize:latest"
 
   memory_size = "128"
-  timeout = "60"
+  timeout     = "60"
 
   vpc_config {
     subnet_ids         = var.private_subnet_ids
@@ -18,7 +18,7 @@ resource "aws_lambda_function" "internal_wanrun_ssr" {
   }
 
   lifecycle {
-    ignore_changes = [ image_uri ]
+    ignore_changes = [image_uri]
   }
 }
 
