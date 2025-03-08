@@ -74,3 +74,78 @@ host    replication     all             ::1/128                 md5
 # Allow connections from any source (Required for SSM Port Forwarding)
 host    all             all             0.0.0.0/0               md5
 ```
+
+
+## DBの設定
+# 接続
+psql -U postgres
+
+# 権限系のSQL実行
+# db作成
+create database wanrun;
+
+# db確認
+\l 
+# db指定
+\c wanrun;
+# スキーマ作成
+CREATE SCHEMA wanrun;
+
+# application 用ユーザー
+# ユーザーの作成
+CREATE ROLE wanrun WITH LOGIN PASSWORD 'wanrun';
+
+# データベースCONNECT権限
+REVOKE CONNECT ON DATABASE wanrun FROM PUBLIC; --全ロールの権限剥奪
+GRANT CONNECT ON DATABASE wanrun TO wanrun;
+
+# スキーマUSAGE権限
+GRANT USAGE ON SCHEMA wanrun TO wanrun;
+GRANT CREATE ON SCHEMA wanrun TO wanrun;
+
+# テーブル操作権限
+# すでにあるテーブルに権限を付与
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA wanrun TO wanrun;
+# 今後作成されるテーブルにも自動で権限を付与
+ALTER DEFAULT PRIVILEGES IN SCHEMA wanrun GRANT ALL PRIVILEGES ON TABLES TO wanrun;
+
+# シーケンス権限
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA wanrun TO wanrun;
+ALTER DEFAULT PRIVILEGES IN SCHEMA wanrun GRANT USAGE, SELECT ON SEQUENCES TO wanrun;
+
+ALTER ROLE wanrun SET search_path TO "wanrun";
+
+
+# debug用ユーザー
+# ユーザー作成
+CREATE ROLE wanrundebug WITH LOGIN PASSWORD 'wanrundebug';
+
+# データベースCONNECT権限
+GRANT CONNECT ON DATABASE wanrun TO wanrundebug;
+
+# スキーマUSAGE権限
+GRANT USAGE ON SCHEMA wanrun TO wanrundebug;
+
+# テーブル操作権限
+# すでにあるテーブルに権限を付与
+GRANT SELECT ON ALL TABLES IN SCHEMA wanrun TO wanrundebug;
+# 今後作成されるテーブルにも自動で権限を付与
+ALTER DEFAULT PRIVILEGES IN SCHEMA wanrun GRANT SELECT ON TABLES TO wanrundebug;
+
+# シーケンス権限
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA wanrun TO wanrundebug;
+ALTER DEFAULT PRIVILEGES IN SCHEMA wanrun GRANT SELECT ON SEQUENCES TO wanrundebug;
+
+ALTER ROLE wanrundebug SET search_path TO "wanrun";
+
+# 接続解除
+exit
+
+
+## migration実行
+cd /opt/wanrun-migrate
+go run migrate.go up
+
+## dogful migration実行
+cd ./dogful
+go run migrate.go
