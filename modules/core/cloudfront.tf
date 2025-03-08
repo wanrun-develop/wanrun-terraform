@@ -22,6 +22,12 @@ resource "aws_cloudfront_distribution" "main" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.frontend.id
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.frontend.id
     cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
+
+    # ssr用
+    lambda_function_association {
+      event_type = "viewer-request"
+      lambda_arn = aws_lambda_function.wanrun_ssr.qualified_arn
+    }
   }
 
   ### gateway側
