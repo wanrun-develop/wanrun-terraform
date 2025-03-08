@@ -16,10 +16,14 @@ resource "aws_lambda_function" "internal_wanrun_ssr" {
     subnet_ids         = var.private_subnet_ids
     security_group_ids = var.lambda_sg_ids
   }
+
+  lifecycle {
+    ignore_changes = [ image_uri ]
+  }
 }
 
 resource "aws_lambda_function_url" "internal_wanrun_ssr" {
-  function_name      = aws_lambda_function.wanrun_ssr.function_name
+  function_name      = aws_lambda_function.internal_wanrun_ssr.function_name
   authorization_type = "AWS_IAM"
 }
 
