@@ -1,5 +1,6 @@
 #######################################################################
 # wanrun server side rendering
+# NOTE: https://qiita.com/j2-yano/items/3aba0f546820927b70c7
 #######################################################################
 resource "aws_lambda_function" "internal_wanrun_ssr" {
   function_name = "${var.service_name}-${var.env}-internal-wanrun-ssr"
