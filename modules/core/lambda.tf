@@ -1,27 +1,39 @@
-
 #######################################################################
 # wanrun server side rendering
+# NOTE: https://qiita.com/j2-yano/items/3aba0f546820927b70c7
 #######################################################################
-resource "aws_lambda_function" "wanrun_ssr" {
-  provider      = aws.virginia
-  function_name = "${var.service_name}-${var.env}-wanrun-ssr"
+resource "aws_lambda_function" "internal_wanrun_ssr" {
+  function_name = "${var.service_name}-${var.env}-internal-wanrun-ssr"
   description   = "Server Side Rendering"
 
-  role    = aws_iam_role.wanrun_ssr.arn
-  handler = "index.handler"
-  runtime = "nodejs20.x"
+  role         = aws_iam_role.wanrun_ssr.arn
+  package_type = "Image"
+  image_uri    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/lambda-initialize:latest"
 
-  publish = true
+  memory_size = "128"
+  timeout     = "60"
 
-  filename         = data.archive_file.wanrun_ssr.output_path
-  source_code_hash = data.archive_file.wanrun_ssr.output_base64sha256
+  vpc_config {
+    subnet_ids         = var.private_subnet_ids
+    security_group_ids = var.lambda_sg_ids
+  }
+
+  lifecycle {
+    ignore_changes = [image_uri]
+  }
 }
 
-# NOTE: 別リポジトリでコード管理とCI/CDを置くため、temporary
-data "archive_file" "wanrun_ssr" {
-  type        = "zip"
-  source_dir  = "${path.module}/function/temporary"
-  output_path = "${path.module}/function/.zip/temporary.zip"
+resource "aws_lambda_function_url" "internal_wanrun_ssr" {
+  function_name      = aws_lambda_function.internal_wanrun_ssr.function_name
+  authorization_type = "AWS_IAM"
+}
+
+resource "aws_lambda_permission" "internal_wanrun_ssr" {
+  statement_id  = "AllowCloudFrontServicePrincipal"
+  action        = "lambda:InvokeFunctionUrl"
+  function_name = aws_lambda_function.internal_wanrun_ssr.function_name
+  principal     = "cloudfront.amazonaws.com"
+  source_arn    = aws_cloudfront_distribution.main.arn
 }
 
 #######################################################################
@@ -38,7 +50,6 @@ data "aws_iam_policy_document" "lambda_edge_assume_role_policy" {
       type = "Service"
 
       identifiers = [
-        "edgelambda.amazonaws.com",
         "lambda.amazonaws.com",
       ]
     }
@@ -59,6 +70,17 @@ data "aws_iam_policy_document" "wanrun_ssr" {
       "logs:PutLogEvents",
       "logs:CreateLogGroup"
     ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "lambda:InvokeFunction",
+      "lambda:GetFunction",
+      "lambda:EnableReplication",
+      "cloudfront:UpdateDistribution"
+    ]
+    resources = ["*"]
   }
 }
 

@@ -131,3 +131,8 @@ variable "ssm_prefix" {
   type    = string
   default = ""
 }
+
+variable "lambda_sg_ids" {
+  type    = list(string)
+  default = []
+}

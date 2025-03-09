@@ -8,3 +8,5 @@ data "aws_cloudfront_cache_policy" "caching_optimized" {
 data "aws_cloudfront_cache_policy" "caching_disabled" {
   name = "Managed-CachingDisabled"
 }
+
+data "aws_caller_identity" "current" {}
