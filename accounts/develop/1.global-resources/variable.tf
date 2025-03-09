@@ -4,6 +4,6 @@ variable "cloudfront_distribution_id" {
 }
 
 variable "lambda_initialize_retention_image_count" {
-  type = number
+  type    = number
   default = 1
 }
