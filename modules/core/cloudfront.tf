@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "main" {
   # `/static/*`, `/assets/*`だけS3に振り分ける
   ordered_cache_behavior {
     path_pattern           = "/static/*"
-    target_origin_id       = "s3-static-site"
+    target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -23,7 +23,7 @@ resource "aws_cloudfront_distribution" "main" {
 
   ordered_cache_behavior {
     path_pattern           = "/assets/*"
-    target_origin_id       = "s3-static-site"
+    target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]

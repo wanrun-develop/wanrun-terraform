@@ -136,3 +136,8 @@ variable "lambda_sg_ids" {
   type    = list(string)
   default = []
 }
+
+variable "lambda_ssr_retention_image_count" {
+  type    = number
+  default = 1
+}

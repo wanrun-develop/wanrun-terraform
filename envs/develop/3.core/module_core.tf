@@ -39,4 +39,8 @@ module "core" {
   # gateway
   whitelist_locations          = ["JP"] // NOTE: 許可する国指定
   access_control_allow_origins = ["https://wanrun.jp"]
+
+  # lambda
+  lambda_sg_ids                    = [data.aws_security_group.lambda_ssr_sg.id]
+  lambda_ssr_retention_image_count = 1
 }

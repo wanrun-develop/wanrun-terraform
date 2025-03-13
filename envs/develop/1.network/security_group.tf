@@ -57,3 +57,30 @@ resource "aws_vpc_security_group_egress_rule" "postgres_on_ec2" {
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
 }
+
+#######################################################################
+# lambda ssr
+#######################################################################
+resource "aws_security_group" "lambda_ssr" {
+  name   = "${var.service_name}-${var.env}-lambda-ssr-sg"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.service_name}-${var.env}-lambda-ssr-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "lambda_ssr" {
+  security_group_id = aws_security_group.lambda_ssr.id
+  description       = "Allow all vpc"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+  cidr_ipv4         = var.vpc_cidr
+}
+
+resource "aws_vpc_security_group_egress_rule" "lambda_ssr" {
+  security_group_id = aws_security_group.lambda_ssr.id
+  ip_protocol       = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+}

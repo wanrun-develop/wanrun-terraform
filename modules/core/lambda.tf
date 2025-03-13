@@ -1,5 +1,5 @@
 #######################################################################
-# wanrun server side rendering
+# lambda wanrun server side rendering
 # NOTE: https://qiita.com/j2-yano/items/3aba0f546820927b70c7
 #######################################################################
 resource "aws_lambda_function" "internal_wanrun_ssr" {
@@ -8,7 +8,7 @@ resource "aws_lambda_function" "internal_wanrun_ssr" {
 
   role         = aws_iam_role.wanrun_ssr.arn
   package_type = "Image"
-  image_uri    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/lambda-initialize:latest"
+  image_uri    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.ap-northeast-1.amazonaws.com/${var.service_name}-global-lambda-initialize:latest"
 
   memory_size = "128"
   timeout     = "60"
@@ -34,6 +34,56 @@ resource "aws_lambda_permission" "internal_wanrun_ssr" {
   function_name = aws_lambda_function.internal_wanrun_ssr.function_name
   principal     = "cloudfront.amazonaws.com"
   source_arn    = aws_cloudfront_distribution.main.arn
+}
+
+#######################################################################
+# ecr wanrun server side rendering
+#######################################################################
+resource "aws_ecr_repository" "internal_wanrun_ssr" {
+  name = "${var.service_name}-${var.env}-internal-wanrun-ssr"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+}
+
+data "aws_ecr_lifecycle_policy_document" "internal_wanrun_ssr" {
+  rule {
+    priority    = 1
+    description = "Only keep untagged images for 1 day."
+
+    selection {
+      tag_status   = "untagged"
+      count_type   = "sinceImagePushed"
+      count_number = 1
+      count_unit   = "days"
+    }
+    action {
+      type = "expire"
+    }
+  }
+  rule {
+    priority    = 2
+    description = "Only keep ${var.lambda_ssr_retention_image_count} images for application repositories."
+
+    selection {
+      tag_status   = "any"
+      count_type   = "imageCountMoreThan"
+      count_number = var.lambda_ssr_retention_image_count
+    }
+    action {
+      type = "expire"
+    }
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "internal_wanrun_ssr" {
+  repository = aws_ecr_repository.internal_wanrun_ssr.name
+  policy     = data.aws_ecr_lifecycle_policy_document.internal_wanrun_ssr.json
 }
 
 #######################################################################
@@ -82,6 +132,16 @@ data "aws_iam_policy_document" "wanrun_ssr" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "wanrun_ssr" {
@@ -94,6 +154,6 @@ resource "aws_iam_role_policy" "wanrun_ssr" {
 # cloudwatch log wanrun server side rendering
 #######################################################################
 resource "aws_cloudwatch_log_group" "wanrun_ssr" {
-  provider = aws.virginia
-  name     = "/aws/lambda/${var.service_name}-${var.env}-wanrun-ssr"
+  name       = "/aws/lambda/${aws_lambda_function.internal_wanrun_ssr.function_name}"
+  depends_on = [aws_lambda_function.internal_wanrun_ssr]
 }

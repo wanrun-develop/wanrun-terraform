@@ -156,11 +156,12 @@ data "aws_iam_policy_document" "github_actions" {
     effect = "Allow"
     actions = [
       "lambda:UpdateFunctionCode",
+      "lambda:GetFunctionConfiguration",
       "lambda:PublishVersion",
       "lambda:UpdateAlias"
     ]
     resources = [
-      "arn:aws:lambda:us-east-1:${data.aws_caller_identity.current.account_id}:function:${var.service_name}-develop-wanrun-ssr"
+      "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.service_name}-*"
     ]
   }
 }
