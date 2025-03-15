@@ -6,7 +6,8 @@ locals {
     "wanrun-webapp",
     "wanrun",
     "wanrun-terraform",
-    "wanrun-mobile"
+    "wanrun-mobile",
+    "wanrun-ssr"
   ]
 
   github_org_name = "wanrun-develop"
@@ -111,7 +112,7 @@ data "aws_iam_policy_document" "github_actions" {
   }
 
   statement {
-    sid    = "S3Access"
+    sid    = "WebAppS3Access"
     effect = "Allow"
     actions = [
       "s3:GetObject",
@@ -147,6 +148,20 @@ data "aws_iam_policy_document" "github_actions" {
     ]
     resources = [
       "*"
+    ]
+  }
+
+  statement {
+    sid    = "SSRLambdaEdge"
+    effect = "Allow"
+    actions = [
+      "lambda:UpdateFunctionCode",
+      "lambda:GetFunctionConfiguration",
+      "lambda:PublishVersion",
+      "lambda:UpdateAlias"
+    ]
+    resources = [
+      "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.service_name}-*"
     ]
   }
 }

@@ -11,8 +11,57 @@ resource "aws_cloudfront_distribution" "main" {
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
-  default_cache_behavior {
+  # `/static/*`, `/assets/*`だけS3に振り分ける
+  ordered_cache_behavior {
+    path_pattern           = "/static/*"
     target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/assets/*"
+    target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
+  }
+
+  # defaultをLambdaに変更
+  # default_cache_behavior {
+  #   target_origin_id       = aws_s3_bucket.web.bucket_regional_domain_name
+  #   viewer_protocol_policy = "redirect-to-https"
+  #   allowed_methods        = ["GET", "HEAD"]
+  #   cached_methods         = ["GET", "HEAD"]
+  #   compress               = true
+
+  #   # 各policy設定
+  #   response_headers_policy_id = aws_cloudfront_response_headers_policy.frontend.id
+  #   origin_request_policy_id   = aws_cloudfront_origin_request_policy.frontend.id
+  #   cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
+  # }
+
+  ### SSR
+  origin {
+    domain_name = replace(replace(aws_lambda_function_url.internal_wanrun_ssr.function_url, "https://", ""), "/", "")
+    origin_id   = aws_lambda_function.internal_wanrun_ssr.function_name
+
+    # oac
+    origin_access_control_id = aws_cloudfront_origin_access_control.internal_wanrun_ssr.id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
+  default_cache_behavior {
+    target_origin_id       = aws_lambda_function.internal_wanrun_ssr.function_name
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -21,7 +70,7 @@ resource "aws_cloudfront_distribution" "main" {
     # 各policy設定
     response_headers_policy_id = aws_cloudfront_response_headers_policy.frontend.id
     origin_request_policy_id   = aws_cloudfront_origin_request_policy.frontend.id
-    cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
+    cache_policy_id            = data.aws_cloudfront_cache_policy.caching_disabled.id // NOTE: ssrなので、キャッシュなし
   }
 
   ### gateway側
@@ -158,10 +207,21 @@ resource "aws_cloudfront_origin_request_policy" "frontend" {
   }
 }
 
+#######################################################################
 # OAC
+#######################################################################
+## S3
 resource "aws_cloudfront_origin_access_control" "frontend" {
   name                              = "${var.service_name}-${var.env}-oac"
   origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+## lambda
+resource "aws_cloudfront_origin_access_control" "internal_wanrun_ssr" {
+  name                              = "${var.service_name}-${var.env}-internal-wanrun-ssr-oac"
+  origin_access_control_origin_type = "lambda"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
