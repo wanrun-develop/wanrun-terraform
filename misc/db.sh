@@ -75,7 +75,6 @@ host    replication     all             ::1/128                 md5
 host    all             all             0.0.0.0/0               md5
 ```
 
-
 ## DBの設定
 # 接続
 psql -U postgres

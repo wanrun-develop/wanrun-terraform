@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+  pgadmin4:
+    image: dpage/pgadmin4:8.4
+    ports:
+      - 1543:80
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+
+volumes:
+  pgadmin-data:
