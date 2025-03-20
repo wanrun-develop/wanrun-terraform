@@ -6,7 +6,8 @@ locals {
     "wanrun-webapp",
     "wanrun",
     "wanrun-terraform",
-    "wanrun-mobile"
+    "wanrun-mobile",
+    "wanrun-ssr"
   ]
 
   github_org_name = "wanrun-develop"
@@ -66,6 +67,8 @@ data "aws_iam_policy_document" "github_actions" {
     sid    = "PushImageOnly"
     effect = "Allow"
     actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
       "ecr:BatchCheckLayerAvailability",
       "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart",
@@ -96,41 +99,71 @@ data "aws_iam_policy_document" "github_actions" {
   statement {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole"]
-
-    condition {
-      test     = "StringLike"
-      variable = "iam:PassedToService"
-      values   = ["ecs-tasks.amazonaws.com"]
-    }
+    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/wr-*-ecs-*"]
   }
 
   statement {
-    sid    = "S3Access"
+    sid    = "Taskdefinition"
     effect = "Allow"
     actions = [
+      "ecs:DescribeTaskDefinition",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "WebAppS3Access"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
-      "s3:ListBucket"
+      "s3:ListBucket",
+      "s3:DeleteObject"
     ]
     resources = [
-      "arn:aws:s3:::${var.service_name}-develop",
-      "arn:aws:s3:::${var.service_name}-develop/*"
+      "arn:aws:s3:::${var.service_name}-develop-webapp",
+      "arn:aws:s3:::${var.service_name}-develop-webapp/*"
     ]
   }
 
   // TODO: cloudfront distribution idを生成後にハードコーディング
-  # statement {
-  #   sid       = "CloudFrontInvalidation"
-  #   effect    = "Allow"
-  #   actions   = [
-  #     "cloudfront:CreateInvalidation",
-  #     "cloudfront:GetDistribution",
-  #     "cloudfront:GetDistributionConfig"
-  #   ]
-  #   resources = [
-  #     "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
-  #   ]
-  # }
+  statement {
+    sid    = "CloudFrontInvalidation"
+    effect = "Allow"
+    actions = [
+      "cloudfront:CreateInvalidation",
+      "cloudfront:GetDistribution",
+      "cloudfront:GetDistributionConfig",
+      "cloudfront:UpdateDistribution"
+    ]
+    resources = [
+      "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "cloudfront:ListDistributions",
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
+  statement {
+    sid    = "SSRLambdaEdge"
+    effect = "Allow"
+    actions = [
+      "lambda:UpdateFunctionCode",
+      "lambda:GetFunctionConfiguration",
+      "lambda:PublishVersion",
+      "lambda:UpdateAlias"
+    ]
+    resources = [
+      "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.service_name}-*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "github_actions" {

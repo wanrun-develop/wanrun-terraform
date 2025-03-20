@@ -7,6 +7,9 @@ locals {
 
   # acm
   acm_name = "wanrun.jp"
+
+  # sg
+  sg_lambda_ssr_name = "${var.service_name}-${var.env}-lambda-ssr-sg"
 }
 
 ###########################################
@@ -63,4 +66,17 @@ data "aws_route53_zone" "wanrun_jp" {
 data "aws_acm_certificate" "wanrun_jp" {
   provider = aws.virginia
   domain   = local.acm_name
+}
+
+// lambda sgの取得
+data "aws_security_group" "lambda_ssr_sg" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
+
+  filter {
+    name   = "tag:Name"
+    values = [local.sg_lambda_ssr_name]
+  }
 }
