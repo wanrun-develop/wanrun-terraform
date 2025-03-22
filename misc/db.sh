@@ -148,3 +148,11 @@ go run migrate.go up
 ## dogful migration実行
 cd ./dogful
 go run migrate.go
+
+# /var/lib/pgsql/data/postgresql.confで下記のコメントアウトを外す
+```
+listen_addresses = '*'
+port = 5432                    # ポート番号。コメントアウトされていないことを確認する
+max_connections = 100          # 最大接続数
+shared_buffers = 128MB         # メモリ設定
+```
