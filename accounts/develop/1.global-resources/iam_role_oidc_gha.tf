@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "github_actions" {
       "cloudfront:UpdateDistribution"
     ]
     resources = [
-      "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${var.cloudfront_distribution_id}"
+      "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/*"
     ]
   }
 

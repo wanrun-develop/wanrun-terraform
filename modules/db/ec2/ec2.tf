@@ -39,6 +39,9 @@ resource "aws_instance" "main" {
   }
 
   lifecycle {
-    ignore_changes = [user_data]
+    ignore_changes = [
+      user_data,
+      ami // NOTE: DBのため更新不要
+    ]
   }
 }

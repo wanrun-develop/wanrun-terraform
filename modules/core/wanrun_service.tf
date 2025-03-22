@@ -2,8 +2,8 @@ locals {
   wanrun = {
     service_name                      = "wanrun"
     priority                          = 1
-    health_check_path                 = "/wanrun/health"
-    path_pattern                      = ["/wanrun/*"]
+    health_check_path                 = "/health"
+    path_pattern                      = ["/*"] // TODO: 指定するようにアプリ側の改修をしたい
     health_check_grace_period_seconds = 120
     all_cpu                           = 256
     all_mem                           = 1024
@@ -215,13 +215,49 @@ resource "aws_ecs_task_definition" "wanrun" {
           },
           {
             "name" : "AWS_S3_BUCKET_NAME",
-            "value" : "__SERVICE_NAME__-__ENV__-cms"
-          }
+            "value" : "${var.service_name}-${var.env}-cms"
+          },
+          {
+            "name" : "POSTGRES_PORT",
+            "value" : "5432"
+          },
+          {
+            "name" : "ENV",
+            "value" : "develop"
+          },
+          {
+            "name" : "STAGE",
+            "value" : "prod"
+          },
+          {
+            "name" : "LOG_LEVEL",
+            "value" : "debug"
+          },
         ]
         "secrets" : [
           {
             "name" : "SECRET_KEY"
-            "valueFrom" : "/__UPPERCASE_SERVICE_NAME__/__UPPERCASE_ENV__/WANRUN/SECRET_KEY"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/SECRET_KEY"
+          },
+          {
+            "name" : "GOOGLE_PLACE_API_KEY"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/GOOGLE_PLACE_API_KEY"
+          },
+          {
+            "name" : "POSTGRES_PASSWORD"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/DB/POSTGRES_PASSWORD"
+          },
+          {
+            "name" : "POSTGRES_USER"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/DB/POSTGRES_USER"
+          },
+          {
+            "name" : "POSTGRES_DB"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/DB/POSTGRES_DB"
+          },
+          {
+            "name" : "POSTGRES_HOST"
+            "valueFrom" : "${var.ssm_prefix}/WANRUN/DB/POSTGRES_HOST"
           }
         ]
       }

@@ -18,6 +18,14 @@ resource "aws_lambda_function" "internal_wanrun_ssr" {
     security_group_ids = var.lambda_sg_ids
   }
 
+  environment {
+    variables = {
+      "AWS_LWA_ENABLE_COMPRESSION" = "true"
+      "NODE_ENV"                   = "production"
+      "PORT"                       = "3000"
+    }
+  }
+
   lifecycle {
     ignore_changes = [image_uri]
   }

@@ -34,6 +34,22 @@ resource "aws_iam_policy" "ecs_task_execution_common" {
           "Action" : "kms:Decrypt",
           # "Resource" : "${var.kms_key_arn}" //NOTE: KMS運用が始まったら指定する
           "Resource" : "*"
+        },
+        {
+          "Sid" : "SSMGetParametersPolicy",
+          "Effect" : "Allow",
+          "Action" : "ssm:GetParameters",
+          "Resource" : "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${var.ssm_prefix}/*"
+        },
+        {
+          "Sid" : "CloudWatchLogsPolicy",
+          "Effect" : "Allow",
+          "Action" : [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "Resource" : "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/ecs/${var.service_name}-${var.env}/*"
         }
       ]
   })
