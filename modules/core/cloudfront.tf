@@ -104,8 +104,8 @@ resource "aws_cloudfront_distribution" "main" {
     var.main_domain
   ]
 
-  is_ipv6_enabled     = true
-  price_class         = "PriceClass_200" // PriceClass_100
+  is_ipv6_enabled = true
+  price_class     = "PriceClass_200" // PriceClass_100
   # default_root_object = "index.html" // SSR側で用意されるので不要
   #   web_acl_id          = var.main_waf_acl_id // NOTE: 現状WAFなしで進める
 
