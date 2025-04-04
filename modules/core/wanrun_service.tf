@@ -3,7 +3,7 @@ locals {
     service_name                      = "wanrun"
     priority                          = 1
     health_check_path                 = "/health"
-    path_pattern                      = ["/*"] // TODO: 指定するようにアプリ側の改修をしたい
+    path_pattern                      = ["wanrun/*"] // TODO: 指定するようにアプリ側の改修をしたい
     health_check_grace_period_seconds = 120
     all_cpu                           = 256
     all_mem                           = 1024
