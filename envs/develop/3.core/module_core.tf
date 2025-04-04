@@ -28,6 +28,7 @@ module "core" {
   fargate_weight_capacity_provider_strategy      = var.fargate_weight_capacity_provider_strategy
   fargate_spot_base_capacity_provider_strategy   = var.fargate_spot_base_capacity_provider_strategy
   fargate_spot_weight_capacity_provider_strategy = var.fargate_spot_weight_capacity_provider_strategy
+  fargate_sg_ids = [ data.aws_security_group.fargate_sg.id ]
 
   # cms
   retention_period = 365
