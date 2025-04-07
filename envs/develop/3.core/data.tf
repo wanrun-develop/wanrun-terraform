@@ -82,7 +82,7 @@ data "aws_security_group" "lambda_ssr_sg" {
   }
 }
 
-// lambda sgの取得
+// fargate sgの取得
 data "aws_security_group" "fargate_sg" {
   filter {
     name   = "vpc-id"
