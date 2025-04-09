@@ -84,3 +84,39 @@ resource "aws_vpc_security_group_egress_rule" "lambda_ssr" {
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
 }
+
+#######################################################################
+# Fargate
+#######################################################################
+resource "aws_security_group" "fargate" {
+  name   = "${var.service_name}-${var.env}-fargate-sg"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "${var.service_name}-${var.env}-fargate-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "fargate" {
+  ip_protocol = "-1"
+  cidr_ipv4   = var.vpc_cidr
+  description = "Allow this vpc"
+
+  security_group_id = aws_security_group.fargate.id
+
+  tags = {
+    Name = "${var.service_name}-${var.env}-fargate-ingress"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "fargate" {
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+  description = "Allow all"
+
+  security_group_id = aws_security_group.fargate.id
+
+  tags = {
+    Name = "${var.service_name}-${var.env}-fargate-egress"
+  }
+}

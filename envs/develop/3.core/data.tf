@@ -10,6 +10,7 @@ locals {
 
   # sg
   sg_lambda_ssr_name = "${var.service_name}-${var.env}-lambda-ssr-sg"
+  sg_fargate_name = "${var.service_name}-${var.env}-fargate-sg"
 }
 
 ###########################################
@@ -78,5 +79,18 @@ data "aws_security_group" "lambda_ssr_sg" {
   filter {
     name   = "tag:Name"
     values = [local.sg_lambda_ssr_name]
+  }
+}
+
+// fargate sgの取得
+data "aws_security_group" "fargate_sg" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.wanrun.id]
+  }
+
+  filter {
+    name   = "tag:Name"
+    values = [local.sg_fargate_name]
   }
 }
